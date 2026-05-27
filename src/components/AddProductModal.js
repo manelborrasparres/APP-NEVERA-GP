@@ -35,8 +35,8 @@ export default function AddProductModal({ visible, onClose, filtroBusqueda, setF
                   <Text style={[styles.nombreItemModal, { color: theme.text }]}>{p.nombre}</Text>
                   <Text style={{ color: theme.textSecondary, fontSize: 12 }}>{p.categoria} · {p.tipo}</Text>
                 </View>
-                {neveraInventario[p.id] && <Text style={styles.tagYaEnNevera}>{neveraInventario[p.id]} listo</Text>}
-                <Text style={styles.plusFilaModal}>+</Text>
+                {neveraInventario[p.id] && <Text style={[styles.tagYaEnNevera, { backgroundColor: theme.itemHistoryBg, color: theme.orange }]}>{neveraInventario[p.id]} listo</Text>}
+                <Text style={[styles.plusFilaModal, { color: theme.orange }]}>+</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -55,6 +55,6 @@ const styles = StyleSheet.create({
   noResultados: { textAlign: 'center', padding: 16 },
   itemFilaProducto: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, borderBottomWidth: 1 },
   nombreItemModal: { fontSize: 15, fontWeight: '500' },
-  tagYaEnNevera: { fontSize: 11, backgroundColor: '#e0f2fe', color: '#0369a1', paddingVertical: 2, paddingHorizontal: 6, borderRadius: 4, overflow: 'hidden', marginRight: 8 },
-  plusFilaModal: { fontSize: 20, color: '#3b82f6', fontWeight: 'bold', paddingHorizontal: 4 }
+  tagYaEnNevera: { fontSize: 11, paddingVertical: 2, paddingHorizontal: 6, borderRadius: 4, overflow: 'hidden', marginRight: 8, fontWeight: 'bold' },
+  plusFilaModal: { fontSize: 20, fontWeight: 'bold', paddingHorizontal: 4 }
 });

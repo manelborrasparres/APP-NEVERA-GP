@@ -9,7 +9,7 @@ export default function NeveraScreen({
 }) {
   return (
     <View style={styles.content}>
-      <TouchableOpacity style={styles.btnAgregarNevera} onPress={() => setModalAddVisible(true)}>
+      <TouchableOpacity style={[styles.btnAgregarNevera, { backgroundColor: theme.accent }]} onPress={() => setModalAddVisible(true)}>
         <Text style={styles.btnAgregarNeveraText}>+ Añadir productos a la Nevera</Text>
       </TouchableOpacity>
 
@@ -28,7 +28,7 @@ export default function NeveraScreen({
           return (
             <View key={id} style={[styles.cardNeveraWrap, { backgroundColor: theme.card, borderColor: theme.border }]}>
               <TouchableOpacity style={styles.cardNeveraPrincipal} onPress={() => setProductoActivo(prod)}>
-                <View style={[styles.ingredientDot, { backgroundColor: FOOD_TYPES[prod.tipoFood]?.color || '#3b82f6' }]} />
+                <View style={[styles.ingredientDot, { backgroundColor: FOOD_TYPES[prod.tipoFood]?.color || theme.accent }]} />
                 <View style={{ flex: 1, marginLeft: 12 }}>
                   <Text style={[styles.prodName, { color: theme.text }]}>{prod.nombre}</Text>
                   <Text style={{ color: theme.textSecondary }}>{cantidad} {prod.tipo}</Text>
@@ -51,15 +51,15 @@ export default function NeveraScreen({
                     {OPCIONES_CANTIDAD[prod.tipo].map((opt) => (
                       <TouchableOpacity 
                         key={opt} 
-                        style={[styles.botonOpt, cantidadSeleccionada === opt ? styles.botonOptActivo : { borderColor: theme.border }]}
+                        style={[styles.botonOpt, cantidadSeleccionada === opt ? { backgroundColor: theme.accent, borderColor: theme.accent } : { borderColor: theme.border }]}
                         onPress={() => setCantidadSeleccionada(opt)}
                       >
-                        <Text style={[styles.textBotonOpt, cantidadSeleccionada === opt ? styles.textBotonOptActivo : { color: theme.text }]}>{opt}</Text>
+                        <Text style={[styles.textBotonOpt, cantidadSeleccionada === opt ? { color: '#FFFFFF', fontWeight: 'bold' } : { color: theme.text }]}>{opt}</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
                   <TouchableOpacity 
-                    style={styles.btnEnviarCaloriasAccion}
+                    style={[styles.btnEnviarCaloriasAccion, { backgroundColor: theme.orange }]}
                     onPress={() => {
                       if (cantidadSeleccionada > cantidad) {
                         alert('No tienes suficiente cantidad en la nevera física.');
@@ -82,7 +82,7 @@ export default function NeveraScreen({
 
 const styles = StyleSheet.create({
   content: { gap: 16 },
-  btnAgregarNevera: { backgroundColor: '#3b82f6', padding: 14, borderRadius: 12, alignItems: 'center', marginVertical: 8 },
+  btnAgregarNevera: { padding: 14, borderRadius: 12, alignItems: 'center', marginVertical: 8 },
   btnAgregarNeveraText: { color: 'white', fontWeight: 'bold', fontSize: 16 },
   emptyStateNative: { alignItems: 'center', padding: 40, marginTop: 20 },
   emptyIcon: { fontSize: 48, marginBottom: 8, opacity: 0.5 },
@@ -93,13 +93,11 @@ const styles = StyleSheet.create({
   prodName: { fontSize: 16, fontWeight: 'bold' },
   expandBtn: { padding: 8 },
   expandBtnText: { fontSize: 14 },
-  panelExpandido: { padding: 16, borderTopWidth: 1, backgroundColor: 'rgba(0,0,0,0.02)' },
+  panelExpandido: { padding: 16, borderTopWidth: 1, backgroundColor: 'rgba(0,0,0,0.01)' },
   labelPanel: { fontSize: 13, marginBottom: 8, fontWeight: '500' },
   contenedorOpcionesBotones: { flexDirection: 'row', gap: 8, marginBottom: 12 },
   botonOpt: { paddingVertical: 6, paddingHorizontal: 12, borderRadius: 6, borderWidth: 1 },
-  botonOptActivo: { backgroundColor: '#3b82f6', borderColor: '#3b82f6' },
   textBotonOpt: { fontSize: 13 },
-  textBotonOptActivo: { color: 'white', fontWeight: 'bold' },
-  btnEnviarCaloriasAccion: { backgroundColor: '#10b981', padding: 10, borderRadius: 8, alignItems: 'center' },
+  btnEnviarCaloriasAccion: { padding: 11, borderRadius: 8, alignItems: 'center' },
   btnEnviarCaloriasAccionText: { color: 'white', fontWeight: 'bold', fontSize: 14 },
 });

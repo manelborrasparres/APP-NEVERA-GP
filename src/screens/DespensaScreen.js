@@ -12,7 +12,7 @@ export default function DespensaScreen({
       <View style={styles.summaryGrid}>
         <View style={[styles.summaryCard, { backgroundColor: theme.card }]}>
           <Text style={[styles.summaryLabel, { color: theme.textSecondary }]}>Calorías Totales</Text>
-          <Text style={[styles.summaryValue, { color: '#3b82f6' }]}>{totalCalories}</Text>
+          <Text style={[styles.summaryValue, { color: theme.text }]}>{totalCalories}</Text>
           <Text style={styles.summaryUnit}>kcal</Text>
         </View>
 
@@ -25,9 +25,9 @@ export default function DespensaScreen({
 
       <View style={[styles.summaryCard, styles.consumedCard, { backgroundColor: theme.card }]}>
         <Text style={[styles.summaryLabel, { color: theme.textSecondary }]}>Calorías Consumidas</Text>
-        <Text style={[styles.summaryValue, { color: '#ef4444' }]}>{consumedCalories}</Text>
+        <Text style={[styles.summaryValue, { color: theme.orange }]}>{consumedCalories}</Text>
         <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: `${totalCalories + consumedCalories > 0 ? (consumedCalories / (totalCalories + consumedCalories)) * 100 : 0}%` }]} />
+          <View style={[styles.progressFill, { backgroundColor: theme.orange, width: `${totalCalories + consumedCalories > 0 ? (consumedCalories / (totalCalories + consumedCalories)) * 100 : 0}%` }]} />
         </View>
       </View>
 
@@ -49,7 +49,6 @@ export default function DespensaScreen({
         </View>
       )}
 
-      {/* Listado */}
       <View style={[styles.ingredientsCard, { backgroundColor: theme.card, borderColor: theme.border }]}>
         <View style={[styles.ingredientsHeader, { borderBottomColor: theme.border }]}>
           <Text style={[styles.ingredientsTitle, { color: theme.text }]}>Ingredientes ({ingredients.length})</Text>
@@ -66,11 +65,11 @@ export default function DespensaScreen({
                   <Text style={[styles.ingredientType, { color: theme.textSecondary }]}>{FOOD_TYPES[ingredient.type]?.label || ingredient.type}</Text>
                 </View>
                 <View style={styles.ingredientCalories}>
-                  <Text style={styles.caloriesValue}>{ingredient.calories}</Text>
+                  <Text style={[styles.caloriesValue, { color: theme.text }]}>{ingredient.calories}</Text>
                   <Text style={[styles.caloriesUnit, { color: theme.textSecondary }]}>kcal</Text>
                 </View>
               </View>
-              <TouchableOpacity style={styles.consumeButton} onPress={() => handleConsumeIngredient(ingredient)}>
+              <TouchableOpacity style={[styles.consumeButton, { backgroundColor: theme.orange }]} onPress={() => handleConsumeIngredient(ingredient)}>
                 <Text style={styles.consumeButtonText}>🛒</Text>
               </TouchableOpacity>
             </View>
@@ -90,7 +89,7 @@ const styles = StyleSheet.create({
   summaryValue: { fontSize: 28, fontWeight: 'bold' },
   summaryUnit: { fontSize: 12, color: '#9ca3af', marginTop: 4 },
   progressBar: { width: '100%', height: 8, backgroundColor: '#e5e7eb', borderRadius: 4, marginTop: 8, overflow: 'hidden' },
-  progressFill: { height: '100%', backgroundColor: '#ef4444', borderRadius: 4 },
+  progressFill: { height: '100%', borderRadius: 4 },
   chartCard: { borderRadius: 12, padding: 16, marginTop: 4, elevation: 1 },
   chartTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 12 },
   ingredientsCard: { borderRadius: 12, marginTop: 4, borderWidth: 1, elevation: 1, overflow: 'hidden' },
@@ -107,8 +106,8 @@ const styles = StyleSheet.create({
   ingredientName: { fontSize: 14, fontWeight: '500' },
   ingredientType: { fontSize: 12 },
   ingredientCalories: { alignItems: 'flex-end' },
-  caloriesValue: { fontSize: 16, fontWeight: 'bold', color: '#3b82f6' },
+  caloriesValue: { fontSize: 16, fontWeight: 'bold' },
   caloriesUnit: { fontSize: 12 },
-  consumeButton: { backgroundColor: '#ef4444', width: 36, height: 36, borderRadius: 8, justifyContent: 'center', alignItems: 'center', marginLeft: 12 },
+  consumeButton: { width: 36, height: 36, borderRadius: 8, justifyContent: 'center', alignItems: 'center', marginLeft: 12 },
   consumeButtonText: { fontSize: 16 }
 });

@@ -3,7 +3,7 @@ import { Animated, StyleSheet, Text } from 'react-native';
 
 export default function CortinaGlobal({ posicionCortina, screenHeight, escalaAnim, theme }) {
   return (
-    <Animated.View style={[styles.cortina, { backgroundColor: theme.accent, top: posicionCortina, height: screenHeight }]}>
+    <Animated.View style={[styles.cortina, { backgroundColor: theme.text, top: posicionCortina, height: screenHeight }]}>
       <Animated.View style={{ transform: [{ scale: escalaAnim }] }}>
         <Text style={styles.textCortina}>MERCADONA</Text>
       </Animated.View>

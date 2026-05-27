@@ -17,7 +17,7 @@ export default function ProductDetailsModal({ producto, onClose, theme }) {
 
           <View style={styles.modalFilaInfo}>
             <Text style={[styles.modalLabelInfo, { color: theme.textSecondary }]}>Categoría</Text>
-            <Text style={styles.modalBadge}>{producto.categoria}</Text>
+            <Text style={[styles.modalBadge, { backgroundColor: theme.accent }]}>{producto.categoria}</Text>
           </View>
           <View style={styles.modalFilaInfo}>
             <Text style={[styles.modalLabelInfo, { color: theme.textSecondary }]}>Unidad de medida</Text>
@@ -25,7 +25,7 @@ export default function ProductDetailsModal({ producto, onClose, theme }) {
           </View>
           <View style={styles.modalFilaInfo}>
             <Text style={[styles.modalLabelInfo, { color: theme.textSecondary }]}>Calorías Base</Text>
-            <Text style={{ color: theme.text, fontWeight: 'bold' }}>{producto.calorias} kcal</Text>
+            <Text style={{ color: theme.orange, fontWeight: 'bold' }}>{producto.calorias} kcal</Text>
           </View>
           <View style={styles.modalFilaInfo}>
             <Text style={[styles.modalLabelInfo, { color: theme.textSecondary }]}>Proteínas</Text>
@@ -48,6 +48,6 @@ const styles = StyleSheet.create({
   tituloModal: { fontSize: 18, fontWeight: 'bold' },
   modalFilaInfo: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8 },
   modalLabelInfo: { fontSize: 14 },
-  modalBadge: { backgroundColor: '#3b82f6', color: 'white', fontSize: 12, paddingVertical: 2, paddingHorizontal: 8, borderRadius: 12, overflow: 'hidden' },
+  modalBadge: { color: 'white', fontSize: 12, paddingVertical: 2, paddingHorizontal: 8, borderRadius: 12, overflow: 'hidden' },
   descripcionProductoModal: { marginTop: 16, padding: 12, borderRadius: 8, fontSize: 13, fontStyle: 'italic', lineHeight: 18 }
 });
