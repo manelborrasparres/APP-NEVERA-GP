@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Modal, TouchableWithoutFeedback } from 'react-native';
 import { Feather, Ionicons } from '@expo/vector-icons';
 
-export default function Header({ currentScreen, navegarConCortina, isDarkMode, setIsDarkMode, theme, onLogout, userEmail = "usuario@mercadona.es" }) {
+export default function Header({ 
+  currentScreen, navegarConCortina, isDarkMode, setIsDarkMode, theme, onLogout, 
+  isMuted, onToggleSonido, userEmail = "usuario@mercadona.es" 
+}) {
   const [profileModalVisible, setProfileModalVisible] = useState(false);
   const headerIconColor = isDarkMode ? theme.text : '#FFFFFF';
 
@@ -22,11 +25,23 @@ export default function Header({ currentScreen, navegarConCortina, isDarkMode, s
         {currentScreen === 'home' ? 'NEVERITA MERCADONA' : currentScreen === 'despensa' ? 'Mi Despensa' : 'Mi Nevera'}
       </Text>
 
-      <TouchableOpacity onPress={() => setIsDarkMode(!isDarkMode)}>
-        <Ionicons name={isDarkMode ? "sunny" : "moon"} size={24} color={headerIconColor} />
-      </TouchableOpacity>
+      {/* Contenedor derecho para agrupar los botones de utilidades */}
+      <View style={styles.rightActionsContainer}>
+        {/* NUEVO BOTÓN: CONTROL DE MÚSICA .M4A */}
+        <TouchableOpacity onPress={onToggleSonido} style={styles.actionButton}>
+          <Ionicons 
+            name={isMuted ? "volume-mute-outline" : "volume-high-outline"} 
+            size={24} 
+            color={headerIconColor} 
+          />
+        </TouchableOpacity>
 
-      {/* ================= MODAL POP-OVER DE PERFIL ================= */}
+        <TouchableOpacity onPress={() => setIsDarkMode(!isDarkMode)} style={styles.actionButton}>
+          <Ionicons name={isDarkMode ? "sunny" : "moon"} size={24} color={headerIconColor} />
+        </TouchableOpacity>
+      </View>
+
+      {/* ================= MODAL PERFIL ================= */}
       <Modal visible={profileModalVisible} transparent={true} animationType="fade" onRequestClose={() => setProfileModalVisible(false)}>
         <TouchableWithoutFeedback onPress={() => setProfileModalVisible(false)}>
           <View style={styles.modalOverlay}>
@@ -69,7 +84,15 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     zIndex: 10,
   },
-  title: { fontSize: 18, fontWeight: 'bold' },
+  title: { fontSize: 16, fontWeight: 'bold', flex: 1, textAlign: 'center', paddingHorizontal: 8 },
+  rightActionsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionButton: {
+    padding: 6,
+    marginLeft: 4,
+  },
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.4)' },
   popoverContainer: { position: 'absolute', top: 65, left: 15, width: 240, borderRadius: 12, borderWidth: 1, padding: 16, elevation: 5 },
   popoverHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 6 },

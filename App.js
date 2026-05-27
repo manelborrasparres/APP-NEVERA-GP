@@ -1,5 +1,15 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Animated, Easing, SafeAreaView, ScrollView, StatusBar, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { 
+  Animated, 
+  Easing, 
+  SafeAreaView, 
+  ScrollView, 
+  StatusBar, 
+  StyleSheet, 
+  useWindowDimensions, 
+  View 
+} from 'react-native';
+import { Audio } from 'expo-av';
 
 // Importaciones de configuración y estilos
 import { PRODUCTOS_BASE, FOOD_TYPES } from './src/constants/data';
@@ -18,12 +28,17 @@ import DespensaScreen from './src/screens/DespensaScreen';
 import NeveraScreen from './src/screens/NeveraScreen';
 
 export default function App() {
+  // --- ESTADOS DE CONTROL GENERAL ---
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false); 
   const [currentScreen, setCurrentScreen] = useState('home'); 
   const { width: screenWidth, height: screenHeight } = useWindowDimensions();
 
-  // --- ESTADOS DE DATOS ---
+  // --- REFS Y ESTADOS DE AUDIO ---
+  const sonidoRef = useRef(null);
+  const [isMuted, setIsMuted] = useState(false); // Estado para saber si el usuario silencia el audio
+
+  // --- ESTADOS DE DATOS (DESPENSA / NEVERA) ---
   const [ingredients, setIngredients] = useState([
     { id: '1', name: 'Pollo', calories: 450, type: 'proteina' },
     { id: '2', name: 'Arroz', calories: 350, type: 'carbohidrato' },
@@ -36,23 +51,94 @@ export default function App() {
   const [consumedHistory, setConsumedHistory] = useState([]);
   const [neveraInventario, setNeveraInventario] = useState({ '1': 500, '2': 1000, '4': 3 }); 
 
-  // --- SUBESTADOS INTERMITENTES ---
+  // --- SUBESTADOS DE MODALES Y FILTROS ---
   const [modalAddVisible, setModalAddVisible] = useState(false);
   const [productoActivo, setProductoActivo] = useState(null);
   const [filtroBusqueda, setFiltroBusqueda] = useState('');
   const [tarjetaExpandidaId, setTarjetaExpandidaId] = useState(null);
   const [cantidadSeleccionada, setCantidadSeleccionada] = useState(null);
 
-  // --- ANIMACIONES ---
+  // --- CONFIGURACIÓN DE ANIMACIONES ---
   const chartScale = useRef(new Animated.Value(0)).current;
   const chartOpacity = useRef(new Animated.Value(0)).current;
   const progresoAnim = useRef(new Animated.Value(0)).current;
   const escalaAnim = useRef(new Animated.Value(1)).current;
 
+  // --- CÁLCULOS DERIVADOS Y TEMAS ---
   const totalCalories = ingredients.reduce((sum, ing) => sum + ing.calories, 0);
   const availableCalories = totalCalories - consumedCalories;
   const theme = getTheme(isDarkMode);
 
+  // --- LÓGICA DE AUDIO (PRECARGA Y REPRODUCCIÓN) ---
+  const precargarSonido = async () => {
+    try {
+      await Audio.setAudioModeAsync({
+        playsInSilentModeIOS: true,
+        staysActiveInBackground: false,
+      });
+
+      // Descargamos cualquier instancia previa por seguridad
+      if (sonidoRef.current) {
+        await sonidoRef.current.unloadAsync();
+      }
+
+      // Cargamos el archivo .m4a en memoria de forma estática
+      const { sound } = await Audio.Sound.createAsync(
+        require('./src/assets/audio/musica_fondo.m4a'), // Cambiado a .m4a
+        { 
+          shouldPlay: false, // No se reproduce solo al cargar
+          isLooping: true,   // Mantiene el bucle si es música de fondo
+          volume: 0.35 
+        }
+      );
+      sonidoRef.current = sound;
+    } catch (error) {
+      console.log("Error al precargar el archivo .m4a:", error);
+    }
+  };
+
+  // Función que se ejecutará al pulsar el botón del Header
+  const toggleSonido = async () => {
+    if (!sonidoRef.current) return;
+
+    try {
+      const status = await sonidoRef.current.getStatusAsync();
+      
+      if (status.isPlaying) {
+        await sonidoRef.current.pauseAsync();
+        setIsMuted(true);
+      } else {
+        await sonidoRef.current.playAsync();
+        setIsMuted(false);
+      }
+    } catch (error) {
+      console.log("Error al controlar el botón de sonido:", error);
+    }
+  };
+
+  const liberarSonido = async () => {
+    if (sonidoRef.current) {
+      await sonidoRef.current.stopAsync();
+      await sonidoRef.current.unloadAsync();
+      sonidoRef.current = null;
+    }
+  };
+
+  // Precargamos cuando el usuario inicia sesión y limpiamos al salir
+  useEffect(() => {
+    if (isAuthenticated) {
+      precargarSonido();
+    } else {
+      liberarSonido();
+      setIsMuted(false);
+    }
+
+    return () => {
+      liberarSonido();
+    };
+  }, [isAuthenticated]);
+
+  // Animación del gráfico circular
   useEffect(() => {
     if (currentScreen === 'despensa' && ingredients.length > 0) {
       chartScale.setValue(0);
@@ -64,10 +150,11 @@ export default function App() {
     }
   }, [ingredients.length, currentScreen]);
 
+  // Transición de cortina animada
   const navegarConCortina = (targetScreen) => {
     const latido = Animated.loop(
       Animated.sequence([
-        Animated.timing(escalaAnim, { toValue: 0.9, duration: 700, useNativeDriver: true }),
+        Animated.timing(escalaAnim, { toValue: 1.05, duration: 700, useNativeDriver: true }),
         Animated.timing(escalaAnim, { toValue: 1, duration: 700, useNativeDriver: true })
       ])
     );
@@ -135,7 +222,6 @@ export default function App() {
     setTarjetaExpandidaId(null);
   };
 
-  // VISTA PRE-AUTENTICACIÓN
   if (!isAuthenticated) {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: theme.bg, justifyContent: 'center' }]}>
@@ -145,20 +231,25 @@ export default function App() {
     );
   }
 
-  // APLICACIÓN LOGUEADA
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.bg }]}>
       <StatusBar barStyle={isDarkMode ? "light-content" : "dark-content"} />
 
       <CortinaGlobal posicionCortina={posicionCortina} screenHeight={screenHeight} escalaAnim={escalaAnim} theme={theme} />
 
+      {/* Pasamos las nuevas propiedades del botón de audio al Header */}
       <Header 
         currentScreen={currentScreen} 
         navegarConCortina={navegarConCortina} 
         isDarkMode={isDarkMode} 
         setIsDarkMode={setIsDarkMode} 
         theme={theme} 
-        onLogout={() => { setIsAuthenticated(false); setCurrentScreen('home'); }}
+        isMuted={isMuted}
+        onToggleSonido={toggleSonido}
+        onLogout={() => {
+          setIsAuthenticated(false);
+          setCurrentScreen('home'); 
+        }}
       />
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
